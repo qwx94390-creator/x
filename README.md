@@ -16,7 +16,7 @@
 ```bash
 python -m venv .venv
 source .venv/bin/activate
-pip install -r requirements.txt  # 可选，启用额外组件
+pip install -r requirements.txt
 python run_bot.py --config config.yaml --once
 ```
 
