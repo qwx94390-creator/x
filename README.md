@@ -52,6 +52,58 @@ python run_bot.py --config config.yaml --once
 支持同时配置，系统会并行发送。
 
 
+## 本地运行（开发调试）
+
+如果你只是想先在本机跑通，按下面步骤即可：
+
+### 1) 准备环境
+
+- Python 3.10+
+- 可访问外网（用于拉取市场数据与发送通知）
+
+```bash
+python -m venv .venv
+source .venv/bin/activate
+pip install -r requirements.txt
+```
+
+### 2) 准备配置
+
+```bash
+cp config.yaml config.local.yaml
+```
+
+然后编辑 `config.local.yaml`，至少确认：
+
+- `app.mode: paper`
+- `database.url` 指向本地可写路径
+- 通知配置按需填写：
+  - `notifications.feishu_webhook_url`
+  - 或 `notifications.telegram_token` + `notifications.telegram_chat_id`
+
+### 3) 单次运行（推荐先验证）
+
+```bash
+python run_bot.py --config config.local.yaml --once
+```
+
+看到 `cycle done` 日志，且通知渠道收到消息（如已配置）即表示跑通。
+
+### 4) 持续运行
+
+```bash
+python run_bot.py --config config.local.yaml --interval 5
+```
+
+说明：`--interval 5` 表示每 5 秒执行一轮。
+
+### 5) 运行测试
+
+```bash
+pytest -q
+```
+
+
 ## 云端部署（推荐：Ubuntu + systemd）
 
 下面以常见云服务器（阿里云/腾讯云/AWS EC2）上的 Ubuntu 22.04 为例：
