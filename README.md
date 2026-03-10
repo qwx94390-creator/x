@@ -8,7 +8,7 @@
 - 执行引擎（Paper Router）
 - 组合与 PnL 跟踪
 - 数据库落盘（SQLAlchemy）
-- 通知接口（Telegram）
+- 通知接口（Telegram/Feishu）
 - 回测引擎
 
 ## 快速启动
@@ -31,7 +31,7 @@ python run_bot.py --config config.yaml --once
 - `execution/`: 订单路由与执行
 - `portfolio/`: 持仓、余额与 PnL
 - `database/`: 交易记录和事件
-- `notifications/`: Telegram/Discord 通知接口
+- `notifications/`: Telegram/Feishu/Discord 通知接口
 - `backtest/`: 历史回测框架
 
 ## 说明
@@ -40,3 +40,13 @@ python run_bot.py --config config.yaml --once
 - 已具备完整模块边界与可运行主流程；
 - 可直接扩展为多策略、多市场、低延迟执行体系；
 - 生产化时请补充：签名认证、重试/熔断、订单状态机、监控告警、CI/CD。
+
+
+## 通知配置
+
+在 `config.yaml` 的 `notifications` 下可以配置：
+
+- `telegram_token` + `telegram_chat_id`：Telegram 机器人通知
+- `feishu_webhook_url`：飞书机器人自定义 Webhook 通知
+
+支持同时配置，系统会并行发送。
