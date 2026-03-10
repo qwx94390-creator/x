@@ -1,0 +1,3 @@
+# Optional production dependencies (the demo can run with Python stdlib only)
+websockets>=12.0
+PyYAML>=6.0.1
