@@ -5,6 +5,8 @@ from data.market_data_service import MarketDataService
 from database.postgres import Database
 from execution.execution_engine import ExecutionEngine
 from execution.order_router import PaperOrderRouter
+from notifications.feishu import FeishuNotifier
+from notifications.multi import MultiNotifier
 from notifications.telegram import TelegramNotifier
 from portfolio.position_manager import PositionManager
 from risk.risk_engine import RiskEngine
@@ -21,7 +23,7 @@ class Services:
     positions: PositionManager
     database: Database
     metrics: MetricsCollector
-    notifier: TelegramNotifier
+    notifier: MultiNotifier
 
 
 def build_services(config: dict) -> Services:
@@ -36,8 +38,10 @@ def build_services(config: dict) -> Services:
     positions = PositionManager()
     database = Database(config["database"]["url"])
     metrics = MetricsCollector()
-    notifier = TelegramNotifier(
-        token=config["notifications"]["telegram_token"],
-        chat_id=config["notifications"]["telegram_chat_id"],
+    telegram = TelegramNotifier(
+        token=config["notifications"].get("telegram_token", ""),
+        chat_id=config["notifications"].get("telegram_chat_id", ""),
     )
+    feishu = FeishuNotifier(webhook_url=config["notifications"].get("feishu_webhook_url", ""))
+    notifier = MultiNotifier([telegram, feishu])
     return Services(market_data, strategy, risk, router, execution, positions, database, metrics, notifier)
