@@ -17,3 +17,4 @@ database:
 notifications:
   telegram_token: ""
   telegram_chat_id: ""
+  feishu_webhook_url: ""
