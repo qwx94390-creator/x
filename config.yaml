@@ -5,6 +5,9 @@ app:
 polymarket:
   api_url: "https://clob.polymarket.com"
   ws_url: "wss://ws-subscriptions-clob.polymarket.com/ws/"
+  api_key: ""
+  api_secret: ""
+  passphrase: ""
 
 risk:
   max_order_size: 200.0

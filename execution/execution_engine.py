@@ -1,8 +1,13 @@
-from execution.order_router import PaperOrderRouter
+from typing import Protocol
+
+
+class OrderRouter(Protocol):
+    async def send(self, order: dict) -> dict:
+        ...
 
 
 class ExecutionEngine:
-    def __init__(self, order_router: PaperOrderRouter) -> None:
+    def __init__(self, order_router: OrderRouter) -> None:
         self.order_router = order_router
 
     def build_order(self, signal: dict) -> dict:

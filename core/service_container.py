@@ -1,14 +1,22 @@
 from dataclasses import dataclass
+from typing import Protocol
 
 from analytics.metrics import MetricsCollector
 from data.market_data_service import MarketDataService
 from database.postgres import Database
+from execution.clob_client import ClobClient
 from execution.execution_engine import ExecutionEngine
-from execution.order_router import PaperOrderRouter
+from execution.order_router import PaperOrderRouter, PolymarketOrderRouter
+from execution.wallet_signer import WalletSigner
 from notifications.telegram import TelegramNotifier
 from portfolio.position_manager import PositionManager
 from risk.risk_engine import RiskEngine
 from strategies.arbitrage_strategy import ArbitrageStrategy
+
+
+class OrderRouterLike(Protocol):
+    async def send(self, order: dict) -> dict:
+        ...
 
 
 @dataclass
@@ -16,7 +24,7 @@ class Services:
     market_data: MarketDataService
     strategy: ArbitrageStrategy
     risk: RiskEngine
-    router: PaperOrderRouter
+    router: OrderRouterLike
     execution: ExecutionEngine
     positions: PositionManager
     database: Database
@@ -31,7 +39,19 @@ def build_services(config: dict) -> Services:
         max_order_size=config["risk"]["max_order_size"],
         max_position_notional=config["risk"]["max_position_notional"],
     )
-    router = PaperOrderRouter()
+
+    mode = config.get("app", {}).get("mode", "paper")
+    if mode == "live":
+        signer = WalletSigner(
+            api_key=config.get("polymarket", {}).get("api_key", ""),
+            api_secret=config.get("polymarket", {}).get("api_secret", ""),
+            passphrase=config.get("polymarket", {}).get("passphrase", ""),
+        )
+        client = ClobClient(config["polymarket"]["api_url"])
+        router: OrderRouterLike = PolymarketOrderRouter(client=client, signer=signer)
+    else:
+        router = PaperOrderRouter()
+
     execution = ExecutionEngine(router)
     positions = PositionManager()
     database = Database(config["database"]["url"])
