@@ -77,6 +77,7 @@ cp config.yaml config.local.yaml
 
 - `app.mode: paper`
 - `database.url` 指向本地可写路径
+- `portfolio.initial_cash_usdt: 20.0`（初始资金，单位 USDT）
 - 通知配置按需填写：
   - `notifications.feishu_webhook_url`
   - 或 `notifications.telegram_token` + `notifications.telegram_chat_id`
@@ -137,6 +138,7 @@ nano config.prod.yaml
 建议重点检查：
 - `app.mode` 是否为 `paper`
 - `database.url` 的路径是否可写
+- `portfolio.initial_cash_usdt` 是否符合你的实盘/模拟资金规模
 - `notifications.feishu_webhook_url` / `telegram_token` / `telegram_chat_id`
 
 ### 4) 先做一次手动验证

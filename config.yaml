@@ -14,6 +14,9 @@ risk:
 database:
   url: "sqlite+aiosqlite:///./bot.db"
 
+portfolio:
+  initial_cash_usdt: 20.0
+
 notifications:
   telegram_token: ""
   telegram_chat_id: ""
