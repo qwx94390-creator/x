@@ -119,6 +119,8 @@ bash scripts/package_release.sh
 
 - `dist/polymarket-bot-YYYYMMDD-HHMMSS.tar.gz`
 
+压缩包内已包含顶层目录 `polymarket-bot-<version>/`，解压后不会把文件散落到当前目录。
+
 你也可以自定义版本号：
 
 ```bash
@@ -137,8 +139,16 @@ scp ubuntu@<server-ip>:/opt/polymarket-bot/dist/polymarket-bot-*.tar.gz .
 
 ```bash
 tar -xzf polymarket-bot-*.tar.gz
-cd polymarket-bot
+cd polymarket-bot-*
 ```
+
+### 4) 一键本地运行
+
+```bash
+bash scripts/run_local.sh
+```
+
+该脚本会自动创建虚拟环境、安装依赖、生成 `config.local.yaml`（若不存在），并执行一次 `--once` 验证。
 
 说明：打包时会自动排除 `.venv`、`.git`、`__pycache__`、`.pytest_cache`、`dist` 等临时/本地文件。
 
