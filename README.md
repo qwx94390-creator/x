@@ -120,6 +120,24 @@ python run_bot.py --config config.local.yaml --interval 5
 - 当日亏损：提高阈值（更保守）
 - 当日盈利：降低阈值（更积极）
 
+
+
+### 常见问题（Windows）
+
+如果本地启动报错：`ModuleNotFoundError: No module named 'httpx'`，说明依赖还没安装到当前 Python 环境。
+
+按下面步骤执行：
+
+```powershell
+cd D:\x-main
+python -m venv .venv
+.venv\Scripts\activate
+pip install -r requirements.txt
+python run_bot.py --config config.yaml --once
+```
+
+如果你用了 PyCharm/VSCode，请确认解释器选择的是项目内 `.venv`，而不是系统 Python。
+
 ### 5) 运行测试
 
 ```bash
