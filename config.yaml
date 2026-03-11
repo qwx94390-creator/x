@@ -21,3 +21,9 @@ notifications:
   telegram_token: ""
   telegram_chat_id: ""
   feishu_webhook_url: ""
+
+llm:
+  provider: "openai_compatible"
+  base_url: ""
+  api_key: ""
+  model: ""

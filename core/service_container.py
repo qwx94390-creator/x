@@ -1,8 +1,10 @@
 from dataclasses import dataclass
 
+from analytics.daily_report import DailyReporter
 from analytics.metrics import MetricsCollector
 from data.market_data_service import MarketDataService
 from database.postgres import Database
+from diagnostics.llm_advisor import LLMAdvisor
 from execution.execution_engine import ExecutionEngine
 from execution.order_router import PaperOrderRouter
 from notifications.feishu import FeishuNotifier
@@ -25,6 +27,8 @@ class Services:
     balance: BalanceTracker
     database: Database
     metrics: MetricsCollector
+    reporter: DailyReporter
+    advisor: LLMAdvisor
     notifier: MultiNotifier
 
 
@@ -33,6 +37,7 @@ def build_services(config: dict) -> Services:
     risk_cfg = config.get("risk", {})
     notifications_cfg = config.get("notifications", {})
     portfolio_cfg = config.get("portfolio", {})
+    llm_cfg = config.get("llm", {})
 
     market_data = MarketDataService(polymarket_cfg["api_url"])
     strategy = ArbitrageStrategy(min_edge_bps=risk_cfg["min_edge_bps"])
@@ -46,10 +51,17 @@ def build_services(config: dict) -> Services:
     balance = BalanceTracker(cash=portfolio_cfg.get("initial_cash_usdt", 20.0))
     database = Database(config["database"]["url"])
     metrics = MetricsCollector()
+    reporter = DailyReporter()
+    advisor = LLMAdvisor(
+        provider=llm_cfg.get("provider", "openai_compatible"),
+        api_key=llm_cfg.get("api_key", ""),
+        model=llm_cfg.get("model", ""),
+        base_url=llm_cfg.get("base_url", ""),
+    )
     telegram = TelegramNotifier(
         token=notifications_cfg.get("telegram_token", ""),
         chat_id=notifications_cfg.get("telegram_chat_id", ""),
     )
     feishu = FeishuNotifier(webhook_url=notifications_cfg.get("feishu_webhook_url", ""))
     notifier = MultiNotifier([telegram, feishu])
-    return Services(market_data, strategy, risk, router, execution, positions, balance, database, metrics, notifier)
+    return Services(market_data, strategy, risk, router, execution, positions, balance, database, metrics, reporter, advisor, notifier)

@@ -9,6 +9,8 @@
 - 组合与 PnL 跟踪
 - 数据库落盘（SQLAlchemy）
 - 通知接口（Telegram/Feishu）
+- 每日收益报告与盈亏原因分析
+- 大模型诊断与策略参数建议
 - 回测引擎
 
 ## 快速启动
@@ -51,7 +53,23 @@ python run_bot.py --config config.yaml --once
 
 支持同时配置，系统会并行发送。
 
+此外支持每日收益诊断：
+- 每日推送 PnL/成交量/信号与拒单统计
+- 自动分析盈利与亏损原因
+- 基于日报调用大模型给出优化建议
 
+
+
+
+### LLM 诊断配置
+
+在 `config.yaml` 里配置 `llm` 段即可启用大模型日报诊断：
+
+- `llm.base_url`：OpenAI 兼容聊天接口地址（如 `/v1/chat/completions`）
+- `llm.api_key`：API Key
+- `llm.model`：模型名
+
+未配置时系统会自动降级为本地规则分析，不影响主流程。
 ## 本地运行（开发调试）
 
 如果你只是想先在本机跑通，按下面步骤即可：
@@ -97,6 +115,10 @@ python run_bot.py --config config.local.yaml --interval 5
 ```
 
 说明：`--interval 5` 表示每 5 秒执行一轮。
+
+每日报告后会根据当日 PnL 自动微调 `risk.min_edge_bps`：
+- 当日亏损：提高阈值（更保守）
+- 当日盈利：降低阈值（更积极）
 
 ### 5) 运行测试
 
