@@ -86,3 +86,10 @@ def build_services(config: dict) -> Services:
     feishu = FeishuNotifier(webhook_url=notifications_cfg.get("feishu_webhook_url", ""))
     notifier = MultiNotifier([telegram, feishu])
     return Services(market_data, strategy, risk, router, execution, positions, balance, database, metrics, reporter, advisor, notifier)
+    telegram = TelegramNotifier(
+        token=config["notifications"].get("telegram_token", ""),
+        chat_id=config["notifications"].get("telegram_chat_id", ""),
+    )
+    feishu = FeishuNotifier(webhook_url=config["notifications"].get("feishu_webhook_url", ""))
+    notifier = MultiNotifier([telegram, feishu])
+    return Services(market_data, strategy, risk, router, execution, positions, database, metrics, notifier)
