@@ -12,10 +12,11 @@ def test_save_and_load_api_settings(tmp_path: Path) -> None:
     cfg = svc.load_config()
     assert cfg["polymarket"]["api_url"] == "https://a"
 
-    svc.save_api_settings("https://new-api", "wss://new-ws")
+    svc.save_api_settings("https://new-api", "wss://new-ws", "trend")
     cfg2 = svc.load_config()
     assert cfg2["polymarket"]["api_url"] == "https://new-api"
     assert cfg2["polymarket"]["ws_url"] == "wss://new-ws"
+    assert cfg2["strategy"]["mode"] == "trend"
 
 
 def test_app_status_stopped_when_pid_missing(tmp_path: Path) -> None:

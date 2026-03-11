@@ -20,11 +20,13 @@ class ControlPanelService:
         with self.config_path.open(encoding="utf-8") as f:
             return yaml.safe_load(f) or {}
 
-    def save_api_settings(self, api_url: str, ws_url: str) -> None:
+    def save_api_settings(self, api_url: str, ws_url: str, strategy_mode: str = "hybrid") -> None:
         config = self.load_config()
         config.setdefault("polymarket", {})
         config["polymarket"]["api_url"] = api_url.strip()
         config["polymarket"]["ws_url"] = ws_url.strip()
+        config.setdefault("strategy", {})
+        config["strategy"]["mode"] = strategy_mode.strip() or "hybrid"
         with self.config_path.open("w", encoding="utf-8") as f:
             yaml.safe_dump(config, f, sort_keys=False, allow_unicode=True)
 

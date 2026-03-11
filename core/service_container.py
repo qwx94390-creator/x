@@ -14,12 +14,15 @@ from portfolio.balance_tracker import BalanceTracker
 from portfolio.position_manager import PositionManager
 from risk.risk_engine import RiskEngine
 from strategies.arbitrage_strategy import ArbitrageStrategy
+from strategies.base_strategy import BaseStrategy
+from strategies.hybrid_strategy import HybridStrategy
+from strategies.trend_following import TrendFollowingStrategy
 
 
 @dataclass
 class Services:
     market_data: MarketDataService
-    strategy: ArbitrageStrategy
+    strategy: BaseStrategy
     risk: RiskEngine
     router: PaperOrderRouter
     execution: ExecutionEngine
@@ -32,6 +35,24 @@ class Services:
     notifier: MultiNotifier
 
 
+def _build_strategy(config: dict) -> BaseStrategy:
+    strategy_cfg = config.get("strategy", {})
+    mode = strategy_cfg.get("mode", "hybrid")
+
+    arbitrage = ArbitrageStrategy(min_edge_bps=config.get("risk", {}).get("min_edge_bps", 80))
+    trend = TrendFollowingStrategy(
+        lookback=strategy_cfg.get("trend_lookback", 5),
+        threshold_bps=strategy_cfg.get("trend_threshold_bps", 50),
+        size=strategy_cfg.get("trend_size", 15.0),
+    )
+
+    if mode == "arbitrage":
+        return arbitrage
+    if mode == "trend":
+        return trend
+    return HybridStrategy([arbitrage, trend])
+
+
 def build_services(config: dict) -> Services:
     polymarket_cfg = config.get("polymarket", {})
     risk_cfg = config.get("risk", {})
@@ -40,7 +61,7 @@ def build_services(config: dict) -> Services:
     llm_cfg = config.get("llm", {})
 
     market_data = MarketDataService(polymarket_cfg["api_url"])
-    strategy = ArbitrageStrategy(min_edge_bps=risk_cfg["min_edge_bps"])
+    strategy = _build_strategy(config)
     risk = RiskEngine(
         max_order_size=risk_cfg["max_order_size"],
         max_position_notional=risk_cfg["max_position_notional"],
