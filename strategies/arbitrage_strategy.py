@@ -6,6 +6,12 @@ class ArbitrageStrategy(BaseStrategy):
         super().__init__()
         self.min_edge_bps = min_edge_bps
 
+    def tune_from_pnl(self, daily_pnl: float) -> None:
+        if daily_pnl < 0:
+            self.min_edge_bps = min(300, self.min_edge_bps + 10)
+        elif daily_pnl > 0:
+            self.min_edge_bps = max(40, self.min_edge_bps - 5)
+
     def generate_signals(self) -> list[dict]:
         signals: list[dict] = []
         threshold = 1.0 - self.min_edge_bps / 10000
