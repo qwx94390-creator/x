@@ -12,6 +12,9 @@ def _print_missing_dependency_help(exc: ModuleNotFoundError) -> None:
         "  .venv\\Scripts\\activate    (Windows)\n"
         "  source .venv/bin/activate   (Linux/macOS)\n"
         "  pip install -r requirements.txt\n"
+        "\n"
+        "You can also install only the missing module quickly:\n"
+        f"  pip install {missing}\n"
     )
     print(msg, file=sys.stderr)
 

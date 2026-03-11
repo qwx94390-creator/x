@@ -22,6 +22,7 @@ pip install -r requirements.txt
 python run_bot.py --config config.yaml --once
 ```
 
+
 > 默认是 `paper` 模式，不会真实下单。
 
 ## 架构
@@ -124,7 +125,7 @@ python run_bot.py --config config.local.yaml --interval 5
 
 ### 常见问题（Windows）
 
-如果本地启动报错：`ModuleNotFoundError: No module named 'httpx'`，说明依赖还没安装到当前 Python 环境。
+如果本地启动报错：`ModuleNotFoundError: No module named 'httpx'` 或 `No module named 'sqlalchemy'`，说明依赖还没安装到当前 Python 环境。
 
 按下面步骤执行：
 
@@ -135,6 +136,7 @@ python -m venv .venv
 pip install -r requirements.txt
 python run_bot.py --config config.yaml --once
 ```
+
 
 如果你用了 PyCharm/VSCode，请确认解释器选择的是项目内 `.venv`，而不是系统 Python。
 
