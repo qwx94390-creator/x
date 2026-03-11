@@ -46,3 +46,12 @@ def test_llm_advisor_fallback_when_not_configured() -> None:
     advisor = LLMAdvisor(base_url="", api_key="", model="")
     msg = advisor.diagnose({"pnl": 1.0})
     assert "disabled" in msg
+
+
+def test_metrics_record_fill_uses_fallback_price_when_fill_price_is_zero() -> None:
+    m = MetricsCollector()
+    m.record_fill({"size": 25, "price": 0.0}, fallback_price=0.42)
+    snap = m.snapshot()
+    assert snap["fills"] == 1
+    assert snap["volume"] == 10.5
+    assert snap["zero_price_fills"] == 1

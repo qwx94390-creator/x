@@ -68,11 +68,13 @@ class TradingEngine:
                 pnl = self._estimate_trade_pnl(signal, result)
                 self.s.balance.apply_pnl(pnl)
                 self.s.metrics.record_realized_pnl(pnl)
-                self.s.metrics.record_fill(result)
+                self.s.metrics.record_fill(result, fallback_price=float(signal.get("yes_price", 0.0)))
 
         summary = self.s.metrics.snapshot()
         summary["cash"] = round(self.s.balance.cash, 4)
         summary["min_edge_bps"] = self.s.strategy.min_edge_bps
+        if summary.get("fills", 0) > 0 and summary.get("volume", 0.0) == 0.0:
+            self.logger.warning("anomaly detected: fills=%s but volume=0.0; check feed price fields", summary.get("fills"))
         self.logger.info("cycle summary: %s", summary)
         self.s.notifier.send_message(f"cycle done: {summary}")
         self._maybe_send_daily_report()

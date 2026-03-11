@@ -14,6 +14,7 @@ class MetricsCollector:
         self.rejected = 0
         self.total_edge_bps = 0.0
         self._daily_realized_pnl = 0.0
+        self.zero_price_fills = 0
 
     def record_signal(self, signal: dict) -> None:
         self.signals += 1
@@ -25,9 +26,14 @@ class MetricsCollector:
     def record_rejection(self) -> None:
         self.rejected += 1
 
-    def record_fill(self, fill: dict) -> None:
+    def record_fill(self, fill: dict, fallback_price: float = 0.0) -> None:
         self.fills += 1
-        self.volume += fill["size"] * fill["price"]
+        size = float(fill.get("size", 0.0))
+        price = float(fill.get("price", 0.0))
+        if price <= 0:
+            self.zero_price_fills += 1
+            price = float(fallback_price)
+        self.volume += size * max(price, 0.0)
 
     def record_realized_pnl(self, pnl: float) -> None:
         self._daily_realized_pnl += pnl
@@ -42,6 +48,7 @@ class MetricsCollector:
             "rejected": self.rejected,
             "avg_edge_bps": round(avg_edge_bps, 2),
             "daily_realized_pnl": round(self._daily_realized_pnl, 4),
+            "zero_price_fills": self.zero_price_fills,
         }
 
     def roll_day_if_needed(self, current_day: str) -> Optional[dict]:
