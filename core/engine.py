@@ -14,6 +14,15 @@ class TradingEngine:
         await self.s.database.connect()
         await self.s.database.create_tables()
 
+    @staticmethod
+    def _strategy_runtime_fields(strategy: object) -> dict:
+        fields = {
+            "strategy_mode": strategy.__class__.__name__,
+            "min_edge_bps": getattr(strategy, "min_edge_bps", None),
+            "trend_threshold_bps": getattr(strategy, "threshold_bps", None),
+        }
+        return {k: v for k, v in fields.items() if v is not None}
+
     def _estimate_trade_pnl(self, signal: dict, result: dict) -> float:
         edge = 1.0 - float(signal.get("yes_price", 0.0)) - float(signal.get("no_price", 0.0))
         size = float(result.get("size", 0.0))
@@ -26,7 +35,7 @@ class TradingEngine:
             return
 
         report = self.s.reporter.build_report(day=snapshot["day"], snapshot=snapshot)
-        llm_advice = self.s.advisor.diagnose({
+        llm_payload = {
             "day": report.day,
             "pnl": report.pnl,
             "volume": report.volume,
@@ -36,12 +45,14 @@ class TradingEngine:
             "avg_edge_bps": report.avg_edge_bps,
             "reason": report.reason,
             "cash": self.s.balance.cash,
-            "min_edge_bps": self.s.strategy.min_edge_bps,
-        })
+        }
+        llm_payload.update(self._strategy_runtime_fields(self.s.strategy))
+
+        llm_advice = self.s.advisor.diagnose(llm_payload)
         msg = self.s.reporter.render_message(report, llm_advice)
         self.s.notifier.send_message(msg)
         self.s.strategy.tune_from_pnl(report.pnl)
-        self.logger.info("daily report sent. new min_edge_bps=%s", self.s.strategy.min_edge_bps)
+        self.logger.info("daily report sent. strategy fields=%s", self._strategy_runtime_fields(self.s.strategy))
 
     async def run_once(self) -> None:
         markets = await self.s.market_data.get_markets(limit=20)
@@ -72,7 +83,7 @@ class TradingEngine:
 
         summary = self.s.metrics.snapshot()
         summary["cash"] = round(self.s.balance.cash, 4)
-        summary["min_edge_bps"] = self.s.strategy.min_edge_bps
+        summary.update(self._strategy_runtime_fields(self.s.strategy))
         if summary.get("fills", 0) > 0 and summary.get("volume", 0.0) == 0.0:
             self.logger.warning("anomaly detected: fills=%s but volume=0.0; check feed price fields", summary.get("fills"))
         self.logger.info("cycle summary: %s", summary)
