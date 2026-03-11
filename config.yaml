@@ -5,12 +5,21 @@ app:
 polymarket:
   api_url: "https://clob.polymarket.com"
   ws_url: "wss://ws-subscriptions-clob.polymarket.com/ws/"
+  api_key: ""
+  api_secret: ""
+  passphrase: ""
 
 risk:
   max_order_size: 200.0
   max_position_notional: 1000.0
   min_edge_bps: 80
 
+database:
+  url: "sqlite+aiosqlite:///./bot.db"
+
+notifications:
+  telegram_token: ""
+  telegram_chat_id: ""
 strategy:
   mode: "hybrid"   # arbitrage | trend | hybrid
   trend_lookback: 5

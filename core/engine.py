@@ -60,6 +60,7 @@ class TradingEngine:
         signals = self.s.strategy.generate_signals()
 
         for signal in signals:
+            if not self.s.risk.check_signal(signal, self.s.positions):
             self.s.metrics.record_signal(signal)
             if not self.s.risk.check_signal(signal, self.s.positions):
                 self.s.metrics.record_rejection()
@@ -76,6 +77,11 @@ class TradingEngine:
                     "size": result["size"],
                     "ts": datetime.now(timezone.utc),
                 })
+                self.s.metrics.record_fill(result)
+
+        summary = self.s.metrics.snapshot()
+        self.logger.info("cycle summary: %s", summary)
+        self.s.notifier.send_message(f"cycle done: {summary}")
                 pnl = self._estimate_trade_pnl(signal, result)
                 self.s.balance.apply_pnl(pnl)
                 self.s.metrics.record_realized_pnl(pnl)
