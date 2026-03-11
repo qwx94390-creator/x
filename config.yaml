@@ -15,14 +15,17 @@ database:
   url: "sqlite+aiosqlite:///./bot.db"
 
 portfolio:
+  # merge-note: keep this key for initial capital tracking
   initial_cash_usdt: 20.0
 
 notifications:
   telegram_token: ""
   telegram_chat_id: ""
+  # merge-note: keep Feishu key when resolving conflicts
   feishu_webhook_url: ""
 
 llm:
+  # merge-note: keep llm.* keys for diagnosis feature
   provider: "openai_compatible"
   base_url: ""
   api_key: ""

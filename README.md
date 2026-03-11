@@ -277,8 +277,9 @@ docker compose up -d
 
 ## 冲突处理说明
 
-如果你在 GitHub 上看到 `README.md` 或 `core/service_container.py` 冲突，建议按下面顺序处理：
+如果你在 GitHub 上看到 `README.md`、`config.yaml`、`core/service_container.py` 冲突，建议按下面顺序处理：
 
-1. 保留 `README.md` 中“本地运行 / 打包下载 / 云端部署”三个章节；
-2. 保留 `core/service_container.py` 中 `MultiNotifier + FeishuNotifier + TelegramNotifier` 组合；
-3. 运行 `pytest -q` 验证后再推送。
+1. 保留 `README.md` 中“本地运行 / 打包下载 / 云端部署 / LLM 诊断配置”章节；
+2. 保留 `config.yaml` 中 `portfolio.initial_cash_usdt`、`notifications.feishu_webhook_url`、`llm.*` 三组配置；
+3. 保留 `core/service_container.py` 中 `MultiNotifier + FeishuNotifier + TelegramNotifier` 组合，且 `Services` 包含 `reporter` 和 `advisor`；
+4. 运行 `pytest -q` 验证后再推送。
