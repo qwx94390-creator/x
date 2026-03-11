@@ -29,22 +29,27 @@ class Services:
 
 
 def build_services(config: dict) -> Services:
-    market_data = MarketDataService(config["polymarket"]["api_url"])
-    strategy = ArbitrageStrategy(min_edge_bps=config["risk"]["min_edge_bps"])
+    polymarket_cfg = config.get("polymarket", {})
+    risk_cfg = config.get("risk", {})
+    notifications_cfg = config.get("notifications", {})
+    portfolio_cfg = config.get("portfolio", {})
+
+    market_data = MarketDataService(polymarket_cfg["api_url"])
+    strategy = ArbitrageStrategy(min_edge_bps=risk_cfg["min_edge_bps"])
     risk = RiskEngine(
-        max_order_size=config["risk"]["max_order_size"],
-        max_position_notional=config["risk"]["max_position_notional"],
+        max_order_size=risk_cfg["max_order_size"],
+        max_position_notional=risk_cfg["max_position_notional"],
     )
     router = PaperOrderRouter()
     execution = ExecutionEngine(router)
     positions = PositionManager()
-    balance = BalanceTracker(cash=config.get("portfolio", {}).get("initial_cash_usdt", 20.0))
+    balance = BalanceTracker(cash=portfolio_cfg.get("initial_cash_usdt", 20.0))
     database = Database(config["database"]["url"])
     metrics = MetricsCollector()
     telegram = TelegramNotifier(
-        token=config["notifications"].get("telegram_token", ""),
-        chat_id=config["notifications"].get("telegram_chat_id", ""),
+        token=notifications_cfg.get("telegram_token", ""),
+        chat_id=notifications_cfg.get("telegram_chat_id", ""),
     )
-    feishu = FeishuNotifier(webhook_url=config["notifications"].get("feishu_webhook_url", ""))
+    feishu = FeishuNotifier(webhook_url=notifications_cfg.get("feishu_webhook_url", ""))
     notifier = MultiNotifier([telegram, feishu])
     return Services(market_data, strategy, risk, router, execution, positions, balance, database, metrics, notifier)
