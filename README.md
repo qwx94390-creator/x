@@ -105,6 +105,44 @@ pytest -q
 ```
 
 
+## 打包下载到本地
+
+如果你想把当前项目打包后下载到本地电脑，可以这样做：
+
+### 1) 在服务器上执行打包脚本
+
+```bash
+bash scripts/package_release.sh
+```
+
+默认会在 `dist/` 下生成类似：
+
+- `dist/polymarket-bot-YYYYMMDD-HHMMSS.tar.gz`
+
+你也可以自定义版本号：
+
+```bash
+bash scripts/package_release.sh v1.0.0
+```
+
+### 2) 下载到本地
+
+在**本地电脑**执行（将 IP 替换为你的云服务器公网地址）：
+
+```bash
+scp ubuntu@<server-ip>:/opt/polymarket-bot/dist/polymarket-bot-*.tar.gz .
+```
+
+### 3) 本地解压
+
+```bash
+tar -xzf polymarket-bot-*.tar.gz
+cd polymarket-bot
+```
+
+说明：打包时会自动排除 `.venv`、`.git`、`__pycache__`、`.pytest_cache`、`dist` 等临时/本地文件。
+
+
 ## 云端部署（推荐：Ubuntu + systemd）
 
 下面以常见云服务器（阿里云/腾讯云/AWS EC2）上的 Ubuntu 22.04 为例：
