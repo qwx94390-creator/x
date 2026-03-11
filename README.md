@@ -177,9 +177,14 @@ pytest -q
 新增本地 Web 控制台，用于：
 
 - 设置交易 API 接口（REST/WS）
-- 查看 API 连接状态
-- 查看应用运行状态（running/stopped）
+- 设置策略模式与趋势参数（arbitrage/trend/hybrid）
+- 设置风控参数与初始资金
+- 设置通知参数（Telegram/Feishu）
+- 设置 LLM 诊断参数
+- 查看 API 连接状态、应用运行状态、最近 cycle 摘要与日志
 - 一键启动/停止机器人
+
+前端现已覆盖所有核心功能入口，日常运维无需再手改配置文件。
 
 启动方式：
 
