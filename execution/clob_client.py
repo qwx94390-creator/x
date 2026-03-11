@@ -56,3 +56,6 @@ class ClobClient:
 
     def list_open_orders(self, headers: dict[str, str] | None = None) -> ClobResponse:
         return self._request("GET", "/orders", headers=headers)
+class ClobClient:
+    def __init__(self, api_url: str) -> None:
+        self.api_url = api_url

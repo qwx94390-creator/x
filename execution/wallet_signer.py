@@ -50,3 +50,6 @@ class WalletSigner:
             "POLY_TIMESTAMP": timestamp,
             "POLY_SIGNATURE": signature,
         }
+class WalletSigner:
+    def sign(self, payload: dict) -> dict:
+        return payload

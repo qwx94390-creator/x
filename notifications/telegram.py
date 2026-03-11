@@ -1,5 +1,6 @@
 from urllib.parse import urlencode
 from urllib.request import urlopen
+import httpx
 
 
 class TelegramNotifier:
@@ -17,3 +18,5 @@ class TelegramNotifier:
                 return
         except Exception:
             return
+        url = f"https://api.telegram.org/bot{self.token}/sendMessage"
+        httpx.post(url, data={"chat_id": self.chat_id, "text": message}, timeout=5)

@@ -56,3 +56,9 @@ def load_config(path: str) -> dict:
         return json.loads(text)
     except json.JSONDecodeError:
         return _simple_yaml_load(text)
+import yaml
+
+
+def load_config(path: str) -> dict:
+    with open(path, encoding="utf-8") as f:
+        return yaml.safe_load(f)

@@ -8,6 +8,11 @@ class OrderRouter(Protocol):
 
 class ExecutionEngine:
     def __init__(self, order_router: OrderRouter) -> None:
+from execution.order_router import PaperOrderRouter
+
+
+class ExecutionEngine:
+    def __init__(self, order_router: PaperOrderRouter) -> None:
         self.order_router = order_router
 
     def build_order(self, signal: dict) -> dict:

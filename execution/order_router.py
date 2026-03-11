@@ -4,6 +4,8 @@ from dataclasses import dataclass
 from execution.clob_client import ClobClient
 from execution.wallet_signer import WalletSigner
 
+from dataclasses import dataclass
+
 
 @dataclass
 class FillResult:
